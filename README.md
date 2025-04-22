@@ -1,20 +1,20 @@
 NSiteLattice1D.ipynb -- 
-  Here focusing on plotting $\int S(\omega, q) d\omega$
-  Directly calculating the structure factor without any smearing of the phonon 
+  1. Here focusing on plotting $\int S(\omega, q) d\omega$
+  2. Directly calculating the structure factor without any smearing of the phonon 
   distribution, and without using the recursion relation.
-  --> Plots comparing the incoherent approx with the full coherent result - still useful! 
-  --> Can do one version with energy cut and one without energy cut (N-dependent DW)
+  3. --> Plots comparing the incoherent approx with the full coherent result - still useful! 
+  4. --> Can do one version with energy cut and one without energy cut (N-dependent DW)
   
 NSiteLattice2D.ipynb -- 
-  Here focusing on plotting $S(\omega, q)$
-  --> Still useful to have 2D plots of $S(\omega, q)$! [But first focus on the 1D plots]
-  Currently old independent code from Momei -- would either need to perform checks against
-  the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
+  1. Here focusing on plotting $S(\omega, q)$
+  2. --> Still useful to have 2D plots of $S(\omega, q)$! [But first focus on the 1D plots]
+  3. Currently old independent code from Momei -- would either need to perform checks against
+  4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
 
 NSiteLatticeFixqRecursive.ipynb --
-  Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
-  --> Why doesn't it match with the impulse approximation?
-  [Can move NSiteLatticeFixq.ipynb to a folder of old notebooks]
+  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
+  2. --> Why doesn't it match with the impulse approximation?
+  3. [Can move NSiteLatticeFixq.ipynb to a folder of old notebooks]
 
 TO DO:
   1. Move "class StructureFactor1D" to separate file, have all the notebooks just calling this and making the various plots
