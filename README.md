@@ -11,10 +11,15 @@ NSiteLattice2D.ipynb --
   3. Currently old independent code from Momei -- would either need to perform checks against
   4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
 
-/archive/NSiteLatticeFixqRecursive.ipynb --
+/archive/NSiteLatticeFixq.ipynb --
   1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
   2. --> Why doesn't it match with the impulse approximation?
   3. Moved to the /archive folder
+
+NSiteLatticeFixqRecursive.ipynb --
+  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
+  2. Implemented density of state function
+  3. --> Why doesn't it match with the impulse approximation?
 
 TODO:
   1. Move "class StructureFactor1D" to a separate file, have all the notebooks just calling this and making the various plots
