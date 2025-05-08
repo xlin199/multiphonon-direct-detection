@@ -3,7 +3,7 @@ from scipy.special import factorial
 from scipy.stats import binned_statistic
 
 class StructureFactor1D:
-    def __init__(self, nLattice,q_value,prevS=None,prevSbinned = None, mass=26161e3, omegaNaught=10e-6, latticeConst=2*np.pi/2.28, couplingConst=28, energyThreshold = 1e-6):
+    def __init__(self, nLattice,q_value,mass=26161e3, omegaNaught=10e-6, latticeConst=2*np.pi/2.28, couplingConst=28, energyThreshold = 1e-6):
         self.nLattice = nLattice # number of lattice
         # self.nPhononMax = nPhononMax
         self.mass = mass # Silicon: 26161e3 keV
@@ -11,8 +11,6 @@ class StructureFactor1D:
         self.latticeConst = latticeConst # Silicon: 2*np.pi/2.28 keV^-1
         self.couplingConst = couplingConst # A, default: 28 for silicon
         self.volume = nLattice*8/(latticeConst**3) # propotional to nLattice
-        self.prevS = prevS # (2,L) array containing L structure factors and its corresponding omega
-        self.prevSbinned = prevSbinned # (2,L) array containing the sum of structure factors and its corresponding omega
         self.q_value = q_value
         self.omegaList = 2*self.omegaNaught*np.sin(np.pi*np.arange(1, self.nLattice)/self.nLattice) # num of energy levels: nLattice-1
         filter = np.argwhere(self.omegaList >= energyThreshold)
@@ -56,10 +54,10 @@ class StructureFactor1D:
         jVector = self.partitionwfilter(nPhonon*np.ones(len(self.omegaList)), nPhonon)
         return jVector
 
-    def get_allowed_omega(self, nPhonon):
-        jVector = self.getJVector(nPhonon)
-        allowed_omega = np.sum(np.multiply(self.omegaList, jVector),axis=1)
-        return allowed_omega
+    # def get_allowed_omega(self, nPhonon):
+    #     jVector = self.getJVector(nPhonon)
+    #     allowed_omega = np.sum(np.multiply(self.omegaList, jVector),axis=1)
+    #     return allowed_omega
 
     def get_diag_ini(self):
         '''
@@ -69,8 +67,8 @@ class StructureFactor1D:
         self.sOrder = 1
         DWfactor =  np.exp(- 2 * self.getDebyeWallerConst()) 
         s_values = 2 * np.pi / self.volume * self.nLattice * DWfactor * self.couplingConst**2 *  (self.q_value**2 /(2*self.mass*self.nLattice)) / self.omegaList
-        self.currIntS = self.get_int_s_factor(np.row_stack((self.omegaList, s_values)))
-        # return self.currIntS
+        self.currIntSDiag = self.get_int_s_diag(np.row_stack((self.omegaList, s_values)))
+        # return self.currIntSDiag
 
     def get_diag_rec(self,):
         '''
@@ -80,8 +78,8 @@ class StructureFactor1D:
         --------returns--------
         newS: (2,a*len(omegaList)) array
         '''
-        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntS[1,:, np.newaxis] / self.omegaList 
-        newOmega = self.currIntS[0,:, np.newaxis] + self.omegaList 
+        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntSDiag[1,:, np.newaxis] / self.omegaList 
+        newOmega = self.currIntSDiag[0,:, np.newaxis] + self.omegaList 
         return np.row_stack((newOmega.T.reshape(-1,), newIntS.T.reshape(-1,)))
     
     def setup_DoS(self,max_omega, nBins=500):
@@ -91,10 +89,10 @@ class StructureFactor1D:
         self._DoS_max_omega = max_omega
         self._DoS_min_omega = 0 
         self._DoS_nBins = nBins
-        # self._DoS_x_list, self._DoS_delta_omega = np.linspace(0, max_omega,nBins, retstep=True) 
+        self._DoS_x_list, self._DoS_delta_omega = np.linspace(0, max_omega,nBins, retstep=True) 
 
 
-    def get_int_s_factor(self,sFactor):
+    def get_int_s_diag(self,sFactor):
         '''
         Integrate the structure factor over omega in bins defined by setup_DoS (int_{omega}^{omega+Delta omega} S d(omega')) 
         --------returns--------
@@ -107,16 +105,16 @@ class StructureFactor1D:
         return np.row_stack((self._DoS_x_list,result.statistic))
     
 
-    def update_s_factor(self):
+    def update_s_diag(self):
         self.sOrder += 1
         print(f'Processing n = {self.sOrder}...')
         sFactor = self.get_diag_rec()
-        self.currIntS = self.get_int_s_factor(sFactor)
+        self.currIntSDiag = self.get_int_s_diag(sFactor)
     
 
-    def get_binned_s_factor(self, xlist, delta_omega):
-        allowed_omegas = self.currIntS[0,:]
-        s_diag = self.currIntS[1,:]
+    def get_binned_s_diag(self, xlist, delta_omega):
+        allowed_omegas = self.currIntSDiag[0,:]
+        s_diag = self.currIntSDiag[1,:]
         result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
         ylist = result.statistic/delta_omega
         return ylist
@@ -126,13 +124,6 @@ class StructureFactor1D:
         jVector = self.getJVector(nPhonon)
         prod_part = np.prod(1/(factorial(jVector)*(self.omegaList ** jVector)), axis=1)
         return factor * self.nLattice * self.couplingConst**2 * (self.q_value**2 /(2*self.mass*self.nLattice))**nPhonon * prod_part
-    
-    def get_binned_s_diag(self,nPhonon, xlist, delta_omega):
-        allowed_omegas = self.get_allowed_omega(nPhonon)
-        s_diag = self.get_diag(nPhonon)
-        result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
-        ylist = result.statistic/delta_omega
-        return xlist, ylist
     
 
 class StructureFactor1D_NIndepDW(StructureFactor1D):
@@ -158,7 +149,7 @@ class StructureFactor1D_NIndepDW(StructureFactor1D):
 # test.setup_DoS(max_omega, nBins=2000)
 # test.get_diag_ini()
 # for i in range(1,nPhonon):
-#     s_diag = test.get_binned_s_factor(xlist, delta_omega)
+#     s_diag = test.get_binned_s_diag(xlist, delta_omega)
 #     s_diag = np.nan_to_num(s_diag, nan=0.0)
 #     sum += s_diag
 #     print(f'Plotting n = {i}...')
@@ -166,7 +157,7 @@ class StructureFactor1D_NIndepDW(StructureFactor1D):
 #     formatter = ScalarFormatter(useMathText=True)
 #     formatter.set_powerlimits((8,8))
 #     ax.yaxis.set_major_formatter(formatter)
-#     test.update_s_factor()
+#     test.update_s_diag()
 # print(f'Plotting n = {nPhonon}...')
 # ax.plot(xlist*1e6, s_diag,label=f'n = {nPhonon}')
 # formatter = ScalarFormatter(useMathText=True)
