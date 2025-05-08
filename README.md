@@ -17,8 +17,8 @@ NSiteLattice2D.ipynb --
   3. Moved to the /archive folder
 
 NSiteLatticeFixqRecursive.ipynb --
-  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation
-  2. Uses DoS approximation
+  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
+  2. Implemented density of state function
   3. --> Why doesn't it match with the impulse approximation?
 
 TODO:
