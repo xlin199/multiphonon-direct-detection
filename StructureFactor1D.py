@@ -23,41 +23,6 @@ class StructureFactor1D:
         '''
         return self.q_value**2 / (4*self.mass*self.nLattice) * np.sum(1/self.omegaList)
         
-    def partition(self, max_range, max_sum):
-        max_range = np.asarray(max_range, dtype = int).ravel()        
-        if(max_range.size == 1):
-            return np.arange(min(max_range[0],max_sum) + 1, dtype = int).reshape(-1,1)
-        P = self.partition(max_range[1:], max_sum)
-        # S[i] is the largest summand we can place in front of P[i]            
-        S = np.minimum(max_sum - P.sum(axis = 1), max_range[0])
-        offset, sz = 0, S.size
-        out = np.empty(shape = (sz + S.sum(), P.shape[1]+1), dtype = int)
-        out[:sz,0] = 0
-        out[:sz,1:] = P
-        for i in range(1, max_range[0]+1):
-            ind, = np.nonzero(S)
-            offset, sz = offset + sz, ind.size
-            out[offset:offset+sz, 0] = i
-            out[offset:offset+sz, 1:] = P[ind]
-            S[ind] -= 1
-        return out
-    
-    def partitionwfilter(self, max_range, max_sum):
-        arr = self.partition(max_range, max_sum)
-        return arr[np.argwhere(np.sum(arr, axis=1) == max_sum)].reshape(-1, len(max_range))
-    
-    def getJVector(self, nPhonon):
-        '''
-        Get all posible sets of j_nu given the total number of phonons. 
-        nPhonon: int
-        '''
-        jVector = self.partitionwfilter(nPhonon*np.ones(len(self.omegaList)), nPhonon)
-        return jVector
-
-    # def get_allowed_omega(self, nPhonon):
-    #     jVector = self.getJVector(nPhonon)
-    #     allowed_omega = np.sum(np.multiply(self.omegaList, jVector),axis=1)
-    #     return allowed_omega
 
     def get_diag_ini(self):
         '''
@@ -67,8 +32,8 @@ class StructureFactor1D:
         self.sOrder = 1
         DWfactor =  np.exp(- 2 * self.getDebyeWallerConst()) 
         s_values = 2 * np.pi / self.volume * self.nLattice * DWfactor * self.couplingConst**2 *  (self.q_value**2 /(2*self.mass*self.nLattice)) / self.omegaList
-        self.currIntSDiag = self.get_int_s_diag(np.row_stack((self.omegaList, s_values)))
-        # return self.currIntSDiag
+        self.currIntS = self.get_int_s_diag(np.row_stack((self.omegaList, s_values)))
+        # return self.currIntS
 
     def get_diag_rec(self,):
         '''
@@ -78,13 +43,13 @@ class StructureFactor1D:
         --------returns--------
         newS: (2,a*len(omegaList)) array
         '''
-        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntSDiag[1,:, np.newaxis] / self.omegaList 
-        newOmega = self.currIntSDiag[0,:, np.newaxis] + self.omegaList 
+        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntS[1,:, np.newaxis] / self.omegaList 
+        newOmega = self.currIntS[0,:, np.newaxis] + self.omegaList 
         return np.row_stack((newOmega.T.reshape(-1,), newIntS.T.reshape(-1,)))
     
     def setup_DoS(self,max_omega, nBins=500):
         '''
-        Set up the DoS function. 
+        Helper function. Defines the bin used to calculate int_S
         '''
         self._DoS_max_omega = max_omega
         self._DoS_min_omega = 0 
@@ -94,7 +59,7 @@ class StructureFactor1D:
 
     def get_int_s_diag(self,sFactor):
         '''
-        Integrate the structure factor over omega in bins defined by setup_DoS (int_{omega}^{omega+Delta omega} S d(omega')) 
+        Helper function. Integrate the structure factor over omega in bins defined by setup_DoS (int_{omega}^{omega+Delta omega} S d(omega')) 
         --------returns--------
         intS: (2,DoS_nBins) array
         '''
@@ -106,25 +71,94 @@ class StructureFactor1D:
     
 
     def update_s_diag(self):
+        '''
+        Update the integrated diagonal s factor using the recursive relation.
+        '''
         self.sOrder += 1
         print(f'Processing n = {self.sOrder}...')
         sFactor = self.get_diag_rec()
-        self.currIntSDiag = self.get_int_s_diag(sFactor)
+        self.currIntS = self.get_int_s_diag(sFactor)
     
 
     def get_binned_s_diag(self, xlist, delta_omega):
-        allowed_omegas = self.currIntSDiag[0,:]
-        s_diag = self.currIntSDiag[1,:]
+        ''' 
+        Call this function to get the binned s factor: int_{each bin} d(omega') S(q, omega') / (bin size)
+        xlist: x values used for plotting
+        delta_omega: bin size, or step size of the xlist
+        --------returns--------
+        ylist: array with same shape as xlist 
+        '''
+        allowed_omegas = self.currIntS[0,:]
+        s_diag = self.currIntS[1,:]
         result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
         ylist = result.statistic/delta_omega
         return ylist
 
-    def get_diag(self, nPhonon):
-        factor = 2 * np.pi / self.volume * np.exp(- 2 * self.getDebyeWallerConst()) 
-        jVector = self.getJVector(nPhonon)
-        prod_part = np.prod(1/(factorial(jVector)*(self.omegaList ** jVector)), axis=1)
-        return factor * self.nLattice * self.couplingConst**2 * (self.q_value**2 /(2*self.mass*self.nLattice))**nPhonon * prod_part
+
+########## The functions below are used for direct calculations (no recursive relation) ##############
     
+
+    # def partition(self, max_range, max_sum):
+    #     max_range = np.asarray(max_range, dtype = int).ravel()        
+    #     if(max_range.size == 1):
+    #         return np.arange(min(max_range[0],max_sum) + 1, dtype = int).reshape(-1,1)
+    #     P = self.partition(max_range[1:], max_sum)
+    #     # S[i] is the largest summand we can place in front of P[i]            
+    #     S = np.minimum(max_sum - P.sum(axis = 1), max_range[0])
+    #     offset, sz = 0, S.size
+    #     out = np.empty(shape = (sz + S.sum(), P.shape[1]+1), dtype = int)
+    #     out[:sz,0] = 0
+    #     out[:sz,1:] = P
+    #     for i in range(1, max_range[0]+1):
+    #         ind, = np.nonzero(S)
+    #         offset, sz = offset + sz, ind.size
+    #         out[offset:offset+sz, 0] = i
+    #         out[offset:offset+sz, 1:] = P[ind]
+    #         S[ind] -= 1
+    #     return out
+    
+    # def partitionwfilter(self, max_range, max_sum):
+    #     arr = self.partition(max_range, max_sum)
+    #     return arr[np.argwhere(np.sum(arr, axis=1) == max_sum)].reshape(-1, len(max_range))
+    
+    # def getJVector(self, nPhonon):
+    #     '''
+    #     For direct calculations (no recursive relation)
+    #     Get all posible sets of j_nu given the total number of phonons. 
+    #     nPhonon: int
+    #     '''
+    #     jVector = self.partitionwfilter(nPhonon*np.ones(len(self.omegaList)), nPhonon)
+    #     return jVector
+    
+    # def get_diag(self, nPhonon):
+    #     '''
+    #     For direct calculations (no recursive relation)
+    #     '''
+    #     factor = 2 * np.pi / self.volume * np.exp(- 2 * self.getDebyeWallerConst()) 
+    #     jVector = self.getJVector(nPhonon)
+    #     prod_part = np.prod(1/(factorial(jVector)*(self.omegaList ** jVector)), axis=1)
+    #     return factor * self.nLattice * self.couplingConst**2 * (self.q_value**2 /(2*self.mass*self.nLattice))**nPhonon * prod_part
+
+    # def get_allowed_omega(self, nPhonon):
+    #     '''
+    #     For direct calculations (no recursive relation)
+    #     '''
+    #     jVector = self.getJVector(nPhonon)
+    #     allowed_omega = np.sum(np.multiply(self.omegaList, jVector),axis=1)
+    #     return allowed_omega
+
+    # def get_binned_s_diag(self,nPhonon, xlist, delta_omega):
+    #     allowed_omegas = self.get_allowed_omega(nPhonon)
+    #     s_diag = self.get_diag(nPhonon)
+    #     result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
+    #     ylist = result.statistic/delta_omega
+    #     return xlist, ylist
+
+##################### End #######################
+
+
+
+########### N-independent DW factor ###########
 
 class StructureFactor1D_NIndepDW(StructureFactor1D):
     def getDebyeWallerConst(self):
@@ -132,7 +166,9 @@ class StructureFactor1D_NIndepDW(StructureFactor1D):
     
 
 
-# # Sample code
+
+################# Sample code #######################
+
 # multplier = 2
 # q_value  = multplier*np.sqrt(2*26161e3*8.25e-6)
 # nLattice = 40
