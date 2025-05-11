@@ -12,10 +12,13 @@ class StructureFactor1D:
         self.couplingConst = couplingConst # A, default: 28 for silicon
         self.volume = nLattice*8/(latticeConst**3) # propotional to nLattice
         self.q_value = q_value
+        #### omega list with energy cut ####
         self.omegaList = 2*self.omegaNaught*np.sin(np.pi*np.arange(1, self.nLattice)/self.nLattice) # num of energy levels: nLattice-1
         filter = np.argwhere(self.omegaList >= energyThreshold)
         self.omegaList = self.omegaList[filter].reshape(-1)
         self.nuList = np.arange(1, self.nLattice)[filter]
+        ################################
+        self.l_diff = np.arange(1, len(self.nuList))
         self.currIntS_diag = None # integrated diagonal structure factor (the integration bins are defined in setup_DoS)
         self.sOrder = None # number of phonons corresponding to currIntS (or the order of currIntS)
 
@@ -42,8 +45,8 @@ class StructureFactor1D:
         '''
         self.sOrder += 1
         print(f'Processing n = {self.sOrder}...')
-        sFactor = self._calc_diag_s_rec()
-        self.currIntS_diag = self._integrate_s_diag(sFactor)
+        newOmega, newS = self._calc_s_diag_rec()
+        self.currIntS_diag = self._integrate_s_diag(newOmega, newS)
 
     def get_binned_s_diag(self, xlist, delta_omega):
         ''' 
@@ -53,9 +56,7 @@ class StructureFactor1D:
         --------returns--------
         ylist: array with same shape as xlist 
         '''
-        allowed_omegas = self.currIntS_diag[0,:]
-        s_diag = self.currIntS_diag[1,:]
-        result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
+        result = binned_statistic(self._DoS_x_list, self.currIntS_diag, statistic="sum",bins=len(xlist), range=(min(xlist), max(xlist)))
         ylist = result.statistic/delta_omega
         return ylist
     
@@ -67,39 +68,37 @@ class StructureFactor1D:
         '''
         return self.q_value**2 / (4*self.mass*self.nLattice) * np.sum(1/self.omegaList)
 
-
     def _s_diag_init(self):
         '''
         Get integrated diagonal s factor of order 1
         '''
         DWfactor =  np.exp(- 2 * self._DebyeWallerConst()) 
         s_values = 2 * np.pi / self.volume * self.nLattice * DWfactor * self.couplingConst**2 *  (self.q_value**2 /(2*self.mass*self.nLattice)) / self.omegaList
-        self.currIntS_diag = self._integrate_s_diag(np.row_stack((self.omegaList, s_values)))
+        self.currIntS_diag = self._integrate_s_diag(self.omegaList, s_values)
         # return self.currIntS_diag
 
-    def _integrate_s_diag(self,sFactor):
+    def _integrate_s_diag(self,allowed_omegas, s_diag):
         '''
         Helper function. Integrate the structure factor over omega in bins defined by setup_DoS (int_{omega}^{omega+Delta omega} S d(omega')) 
         --------returns--------
-        intS: (2,DoS_nBins) array
+        intS: (DoS_nBins,) array, sum of s factor
         '''
-        allowed_omegas = sFactor[0,:]
-        s_diag = sFactor[1,:]
         result = binned_statistic(allowed_omegas, s_diag, statistic="sum",bins=self._DoS_nBins, range=(self._DoS_min_omega, self._DoS_max_omega))
         # np.nan_to_num(result.statistic, nan=0.0)
-        return np.row_stack((self._DoS_x_list,result.statistic))
+        return result.statistic
     
-    def _calc_diag_s_rec(self,):
+    def _calc_s_diag_rec(self,):
         '''
         Helper function. 
         Use the recursive relation to calculate the structure factor of nPhonon-th order
         --------returns--------
-        newS: (2,a*len(omegaList)) array
+        newOmega, newS: both are (a*len(omegaList),) array
         '''
-        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntS_diag[1,:, np.newaxis] / self.omegaList 
-        newOmega = self.currIntS_diag[0,:, np.newaxis] + self.omegaList 
-        return np.row_stack((newOmega.T.reshape(-1,), newIntS.T.reshape(-1,)))
+        newIntS = (self.q_value**2 /(2*self.mass*self.nLattice))/self.sOrder * self.currIntS_diag[:, np.newaxis] / self.omegaList 
+        newOmega = self._DoS_x_list[:, np.newaxis] + self.omegaList 
+        return newOmega.T.reshape(-1,), newIntS.T.reshape(-1,)
     
+
 
 
 
