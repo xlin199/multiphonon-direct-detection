@@ -169,42 +169,54 @@ class StructureFactor1D_NIndepDW(StructureFactor1D):
 
 ################# Sample code #######################
 
-# multplier = 2
-# q_value  = multplier*np.sqrt(2*26161e3*8.25e-6)
-# nLattice = 40
+# omega_dw = 8.194e-6
+# multplier = 2.5
+# q_value  = multplier*np.sqrt(2*26161e3*13.124e-6) # uses averaged omega (not inverse of averaged inverse)
+
+
+# nLattice = 1000
 # test = StructureFactor1D_NIndepDW(nLattice = nLattice,q_value=q_value, couplingConst=28,)
 # fmt = ['r-', 'g-', 'b-', 'y-', 'c-']
-# max_omega = 100*1e-6 # keV
-# xlist, delta_omega = np.linspace(0, max_omega,100, retstep=True) 
+# max_omega = 150*1e-6 # keV
+# xlist, delta_omega = np.linspace(0, max_omega,50, retstep=True) 
+# nPhonon = 40
+
 # # impulse approx
-# deltasq = q_value**2 * 8.25e-6/(2*test.mass)
-# ia =  28**2 / (8/(test.latticeConst**3)) * np.sqrt(2*np.pi/deltasq) * np.exp(- (xlist-(q_value**2/(2*test.mass)))**2 / (2*deltasq))
+# deltasq = q_value**2 * 13.124e-6/(2*test.mass)
+# ia =  28**2 / (8/(test.latticeConst**3)) * np.sqrt(2*np.pi/deltasq) * np.exp(- (xlist-(q_value**2/(2*test.mass)))**2 / (2*deltasq)) # uses averaged omega (not inverse of averaged inverse)
+
 # sum = np.zeros(xlist.shape)
 # fig, ax = plt.subplots(figsize=(8,6))
-# nPhonon = 10
 # test.setup_DoS(max_omega, nBins=2000)
 # test.get_diag_ini()
 # for i in range(1,nPhonon):
-#     s_diag = test.get_binned_s_diag(xlist, delta_omega)
-#     s_diag = np.nan_to_num(s_diag, nan=0.0)
-#     sum += s_diag
+#     s_diag = test.get_binned_s_diag(xlist, delta_omega) # get the binned s factor of order i
+#     s_diag = np.nan_to_num(s_diag, nan=0.0) # cleaning up the nan
+#     sum += s_diag # update the sum of s factor
 #     print(f'Plotting n = {i}...')
-#     ax.plot(xlist*1e6, s_diag,label=f'n = {i}')
+#     # plot the current s factor
+#     ax.plot(xlist*1e6, s_diag,label=f'n = {i}') 
 #     formatter = ScalarFormatter(useMathText=True)
 #     formatter.set_powerlimits((8,8))
 #     ax.yaxis.set_major_formatter(formatter)
+#     # calculate the s factor of next order
 #     test.update_s_diag()
+# # plotting the last s factor
 # print(f'Plotting n = {nPhonon}...')
 # ax.plot(xlist*1e6, s_diag,label=f'n = {nPhonon}')
 # formatter = ScalarFormatter(useMathText=True)
 # formatter.set_powerlimits((8,8))
 # ax.yaxis.set_major_formatter(formatter)
+# # plot the impulse approximation
 # ax.plot(xlist*1e6, ia, linestyle="--", color="gray", label='Impulse')
+# # plot the sum of s for all orders
 # ax.plot(xlist*1e6,sum, label="Total",color="black")
+# # labels & titles
 # txt1 = r"$\omega_{DW}$" #r"exp$(\frac{q^2}{4m\omega_{DW}})$"
-# txt2 = r"$\sqrt{2m\omega_{DW}}$" 
+# txt2 = r"$\sqrt{2m\bar\omega}$" 
 # plt.ylim(-0.1e8, 7.2e8)
-# plt.title(f'DoS + Incoherent approx, N-independent DW, Recursive\nN = {nLattice}, {txt1} = 8.25 meV, q = {multplier}{txt2}')# , {txt} = {test.omegaNaught*1e6} meV
+# plt.title(f'DoS + Incoherent approx, N-independent DW, Recursive\nN = {nLattice}, {txt1} = {omega_dw*1e6} meV, q = {multplier}{txt2}')# , {txt} = {test.omegaNaught*1e6} meV
 # plt.ylabel('Structure factor')
 # plt.xlabel(r'$\omega$[meV]')
 # plt.legend()
+# plt.savefig(f"sfactorwrtomega_q{int(q_value)}_{nLattice}lattice_NindepDW_energyCut_recur_DoS", bbox_inches="tight")
