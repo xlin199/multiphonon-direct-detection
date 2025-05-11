@@ -1,3 +1,21 @@
+StructureFactor1D.py --
+  1. Script calculating $S(\omega, q)$ as a function of $\omega$ for different $q$.
+  2. Finished the incoherent approximation (see NSiteLatticeFixqRecursive.ipynb)
+
+NSiteLatticeFixqRecursive.ipynb --
+  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
+  2. Fast!! 
+  3. --> Why doesn't it match with the impulse approximation?
+
+NSiteLatticeFixqRecursiveCoherent.ipynb --
+  1. $S(\omega, q)$ as a function of $\omega$ for different $q$, including the off-diagonal factors
+
+
+/archive/NSiteLatticeFixq.ipynb --
+  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
+  2. --> Why doesn't it match with the impulse approximation?
+  3. Moved to the /archive folder
+
 NSiteLattice1D.ipynb -- 
   1. Here focusing on plotting $\int S(\omega, q) d\omega$
   2. Directly calculating the structure factor without any smearing of the phonon 
@@ -10,16 +28,6 @@ NSiteLattice2D.ipynb --
   2. --> Still useful to have 2D plots of $S(\omega, q)$! [But first focus on the 1D plots]
   3. Currently old independent code from Momei -- would either need to perform checks against
   4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
-
-/archive/NSiteLatticeFixq.ipynb --
-  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
-  2. --> Why doesn't it match with the impulse approximation?
-  3. Moved to the /archive folder
-
-NSiteLatticeFixqRecursive.ipynb --
-  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
-  2. Implemented density of state function
-  3. --> Why doesn't it match with the impulse approximation?
 
 TODO:
   1. Move "class StructureFactor1D" to a separate file, have all the notebooks just calling this and making the various plots
