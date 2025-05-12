@@ -18,7 +18,7 @@ class StructureFactor1D:
         self.omegaList = self.omegaList[filter].reshape(-1)
         self.nuList = np.arange(1, self.nLattice)[filter]
         ################################
-        self.l_diff = np.arange(1, len(self.nuList))
+        self.l_diff = np.arange(1, nLattice)
         self.currIntS_diag = None # integrated diagonal structure factor (the integration bins are defined in setup_DoS)
         self.sOrder = None # number of phonons corresponding to currIntS (or the order of currIntS)
 
