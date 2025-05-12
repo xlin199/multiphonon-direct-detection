@@ -39,7 +39,7 @@ class StructureFactor1D:
         self._s_diag_init()
         self._c_offdiag_init()
 
-def update_s_factor(self):
+    def update_s_factor(self):
         '''
         Update the integrated diagonal s factor (both diagonal and off diagonal) using the recursive relation.
         '''
