@@ -10,7 +10,7 @@ class StructureFactor1D:
         self.omegaNaught = omegaNaught # Silicon: 10e-6 keV, maximum energy 20 meV
         self.latticeConst = latticeConst # Silicon: 2*np.pi/2.28 keV^-1
         self.couplingConst = couplingConst # A, default: 28 for silicon
-        self.volume = nLattice*8/(latticeConst**3) # propotional to nLattice
+        self.volume = nLattice*(latticeConst**3)/4 # propotional to nLattice
         self.q_value = q_value
         #### omega list with energy cut ####
         self.omegaList = 2*self.omegaNaught*np.sin(np.pi*np.arange(1, self.nLattice)/self.nLattice) # num of energy levels: nLattice-1
@@ -115,7 +115,7 @@ class StructureFactor1D:
         Calculate the first c_ll' of the recursive relation. 
         currIntC_offdiag: 2d array with shape (# of nu, # of xi)
         '''
-        DWfactor =  np.exp(- 2 * self.getDebyeWallerConst()) 
+        DWfactor =  np.exp(- 2 * self._DebyeWallerConst()) 
         offdiag_factor = np.exp(1j*(self.q_value*self.latticeConst-2*np.pi* self.nuList/self.nLattice)* self.l_diff) 
         c_values =  2 * np.pi / self.volume * DWfactor *  (self.q_value**2 /(2*self.mass*self.nLattice)) * offdiag_factor/ self.omegaList[:,np.newaxis]
         self.currIntC_offdiag = self._integrate_c_offdiag(self.omegaList, c_values)
@@ -201,23 +201,17 @@ class StructureFactor1D:
 
 
 
-########### N-independent DW factor ###########
 
-class StructureFactor1D_NIndepDW(StructureFactor1D):
-    def getDebyeWallerConst(self):
-        return self.q_value**2 / (4*self.mass*8.25e-6) # take W(q) = q^2/(4 m omega_DW) 
-    
 
 
 
 ################# Sample code #######################
 
-# omega_dw = 8.2e-6
 # multplier = 1.8
 # q_value  = multplier*np.sqrt(2*26161e3*13.13e-6) # uses averaged omega (not inverse of averaged inverse)
 
 # nLattice = 200
-# test = StructureFactor1DCoherent(nLattice = nLattice,q_value=q_value, couplingConst=28,)
+# test = StructureFactor1D(nLattice = nLattice,q_value=q_value, couplingConst=28,)
 # # color = ['r', 'g', 'b', 'y', 'c', 'tab:blue', 'tab:red', 'tab:yellow', "tab:brown", 'tab:purple']
 # max_omega = 150*1e-6 # keV
 # xlist, delta_omega = np.linspace(0, max_omega,100, retstep=True) 
