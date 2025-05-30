@@ -113,7 +113,7 @@ class StructureFactor1D:
     def _c_offdiag_init(self,): # l' minus l
         '''
         Calculate the first c_ll' of the recursive relation. 
-        currIntC_offdiag: 2d array with shape (# of nu, # of xi)
+        currIntC_offdiag: 2d array with shape (# of nu, # of (l-l'))
         '''
         DWfactor =  np.exp(- 2 * self._DebyeWallerConst()) 
         offdiag_factor = np.exp(1j*(self.q_value*self.latticeConst-2*np.pi* self.nuList/self.nLattice)* self.l_diff) 
