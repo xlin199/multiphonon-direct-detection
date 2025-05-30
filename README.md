@@ -4,17 +4,20 @@ StructureFactor1D.py --
 
 NSiteLatticeFixqRecursive.ipynb --
   1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
-  2. Fast!! 
-  3. --> Why doesn't it match with the impulse approximation?
 
 NSiteLatticeFixqRecursiveCoherent.ipynb --
   1. $S(\omega, q)$ as a function of $\omega$ for different $q$, including the off-diagonal factors
-
+  2. Sanity check passed: 1 phonon resonance matches the dispersion relation
 
 /archive/NSiteLatticeFixq.ipynb --
   1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
-  2. --> Why doesn't it match with the impulse approximation?
+  2. --> ~~Why doesn't it match with the impulse approximation?~~ used wrong DW factor. Fixed in newer notebooks. 
   3. Moved to the /archive folder
+
+NSiteLatticeFixq_2phonons.ipynb
+  1. Visualizes the phonon energy distribution for the 2-phonon structure factor, incoherent corrections included
+  2. 2d plot ( $\omega_1$ vs $\omega_2$ ) with colorbar $S^{(2)}(\omega=\omega_1+\omega_2, q)$
+  3. Matches the dispersion relation
 
 NSiteLattice1D.ipynb -- 
   1. Here focusing on plotting $\int S(\omega, q) d\omega$
