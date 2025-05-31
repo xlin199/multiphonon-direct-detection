@@ -2,7 +2,23 @@ import numpy as np
 from scipy.special import factorial
 from scipy.stats import binned_statistic
 
+
+'''
+Calculates the structure factor as a function of omega for a fixed q. 
+
+The exact structure factor has innumerable delta functions, and it's inefficient (impossible at higher order) to keep track of all of them. 
+This script therefore uses a binned version of density of states as an approximation: 
+We sum all delta functions at (omega, omega + d omega) interval, and assign the summed structure factor to frequency omega in the intermediate steps. 
+This approximation is exact up to O(d omega). 
+
+To compare our discrete calculations with the continuous ones, we need to bin the intermediate calculations again. 
+The final structure factor S = sum(delta functions in one bin)/bin size
+Here the bin size is arbitrary, and we can choose a coarser bin to smear the delta functions out. 
+'''
+
+
 class StructureFactor1D:
+
     def __init__(self, nLattice,q_value,mass=26161e3, omegaNaught=10e-6, latticeConst=2*np.pi/2.28, couplingConst=28, energyThreshold = 1e-6):
         self.nLattice = nLattice # number of lattice
         # self.nPhononMax = nPhononMax
@@ -20,7 +36,8 @@ class StructureFactor1D:
         ################################
         self.l_diff = np.arange(1, nLattice)
         self.currIntS_diag = None # integrated diagonal structure factor (the integration bins are defined in setup_DoS)
-        self.sOrder = None # number of phonons corresponding to currIntS (or the order of currIntS)
+        self.currIntC_offdiag = None 
+        self.sOrder = None # number of phonons corresponding to currIntS/currIntC
 
     ######## Public functions ########
 
