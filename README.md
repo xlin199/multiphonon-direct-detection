@@ -1,3 +1,5 @@
+## Files
+
 StructureFactor1D.py --
   1. Script calculating $S(\omega, q)$ as a function of $\omega$ for different $q$.
   2. Finished the incoherent approximation (see NSiteLatticeFixqRecursive.ipynb)
@@ -8,6 +10,11 @@ NSiteLatticeFixqRecursive.ipynb --
 NSiteLatticeFixqRecursiveCoherent.ipynb --
   1. $S(\omega, q)$ as a function of $\omega$ for different $q$, including the off-diagonal factors
   2. Sanity check passed: 1 phonon resonance matches the dispersion relation
+
+NSiteLatticeCoherentMultiprocess.py --
+  1. Batch calculation of $S(\omega, q)$ for a list of $q$, same code as in NSiteLatticeFixqRecursiveCoherent.ipynb
+   
+  ---
 
 /archive/NSiteLatticeFixq.ipynb --
   1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
@@ -32,20 +39,25 @@ NSiteLattice2D.ipynb --
   3. Currently old independent code from Momei -- would either need to perform checks against
   4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
 
-TODO:
-  1. Move "class StructureFactor1D" to a separate file, have all the notebooks just calling this and making the various plots
-  2. Inside "class StructureFactor1D", we can have the recursive structure factor calculation 
-      and also keep the direct calculation in NSiteLattice1D.ipynb
-  3. Update notebooks for the N-site lattice 
+---
+
+<!-- TODO:
+  1. Update notebooks for the N-site lattice 
        * $\int S(\omega, q) d\omega$ vs. q comparing incoherent and coherent
        * Plotting $S(\omega, q)$ as a function of $\omega$ for different $q$ 
           -- compare incoherent and coherent, compare impulse approx
        * 2D plot $S(\omega, q)$
        * Rate calculation (compare with single HO)
-  4. New notebook for reproducing single HO structure factor and rate
-  5. Notebook for structure factor and rate for two-site lattice
+  . New notebook for reproducing single HO structure factor and rate
+  1. Notebook for structure factor and rate for two-site lattice
        * $\int S(\omega, q) d\omega$ vs. q comparing incoherent and coherent
        * Plotting $S(\omega, q)$ as a function of $\omega$ for different $q$ 
           -- compare incoherent and coherent, compare impulse approx
        * 2D plot $S(\omega, q)$
-       * Rate calculation (compare with single HO)
+       * Rate calculation (compare with single HO) -->
+
+#### TODO
+1. Rate calculation 
+   - Sanity check: reproduce 2205.02250 Fig 15(a), silicon with 1 meV energy threshold (intermediate step: Fig 13 (c) $dR/d \omega$)
+
+
