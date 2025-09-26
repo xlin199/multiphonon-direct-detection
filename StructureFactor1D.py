@@ -50,18 +50,20 @@ class StructureFactor1D:
         self._DoS_nBins = nBins
         self._DoS_x_list, self._DoS_delta_omega = np.linspace(0, max_omega,nBins, retstep=True) 
 
-    def init_recursion(self): 
+    def init_recursion(self, print_message=True): 
         self.sOrder = 1
-        print(f'Processing n = {self.sOrder}...')
+        if print_message:
+            print(f'Processing n = {self.sOrder}...')
         self._s_diag_init()
         self._c_offdiag_init()
 
-    def update_s_factor(self):
+    def update_s_factor(self, print_message=True):
         '''
         Update the integrated diagonal s factor (both diagonal and off diagonal) using the recursive relation.
         '''
         self.sOrder += 1
-        print(f'Processing n = {self.sOrder}...')
+        if print_message:
+            print(f'Processing n = {self.sOrder}...')
         # update diagonal term
         newOmega, newS = self._calc_s_diag_rec()
         self.currIntS_diag = self._integrate_s_diag(newOmega, newS)
