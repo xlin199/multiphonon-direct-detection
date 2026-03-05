@@ -13,7 +13,7 @@ def multi_processing_helper(q_value, nPhonon,
     xlist, delta_omega = np.linspace(0, max_omega,omegalength, retstep=True) 
     s_tot = np.zeros(xlist.shape)
     s_diag_tot = np.zeros(xlist.shape)
-    sFacCalc.setup_DoS(max_omega, nBins=1500)
+    sFacCalc.setup_DoS(max_omega, nBins=1200)
     sFacCalc.init_recursion(print_message=False)
     s_diag = sFacCalc.get_binned_s_diag(xlist, delta_omega)
     s_offdiag = sFacCalc.get_binned_s_offdiag(xlist, delta_omega)
@@ -32,22 +32,22 @@ def multi_processing_helper(q_value, nPhonon,
         s_tot += s_offdiag
     return s_diag_tot, s_tot
 
-omegalength=1200
-max_omega = 250*1e-6
-nLattice=120
+omegalength=600
+max_omega = 220*1e-6
+nLattice = 200
 phonon_func = partial(multi_processing_helper, omegalength=omegalength, nLattice=nLattice, max_omega = max_omega)
-nPhonon10func = partial(phonon_func, nPhonon = 10)
-nPhonon20func = partial(phonon_func, nPhonon = 20)
+nPhonon10func = partial(phonon_func, nPhonon = 30)
+nPhonon20func = partial(phonon_func, nPhonon = 30)
 
 if __name__ == "__main__":
     omegalist = np.linspace(0, max_omega,omegalength, ) 
     qscale = np.sqrt(2*26161e3*13.13e-6) # uses averaged omega (not inverse of averaged inverse)
-    qlenth = 1200
-    qlist = np.linspace(0.0004, 2.5*qscale, qlenth) # 2.5 sqrt(2m omega_bar)
+    qlenth = 600
+    qlist = np.logspace(-1.5, np.log(300), qlenth) # 2.5 sqrt(2m omega_bar)
     print("Start time:", datetime.now())
     with Pool(cpu_count()//2) as pool:
-        allresult10phonon = pool.map(nPhonon10func, qlist[:qlenth//2])
-        allresult20phonon = pool.map(nPhonon20func, qlist[qlenth//2:])
+        allresult10phonon = pool.map(nPhonon10func, qlist[:2])
+        allresult20phonon = pool.map(nPhonon20func, qlist[2:])
     res10diag, res10 = zip(*allresult10phonon)
     res20diag, res20 = zip(*allresult20phonon)
     finalresdiag = np.concatenate((res10diag, res20diag))
@@ -55,6 +55,6 @@ if __name__ == "__main__":
      # shape: (q length, omega length)
     print("End time:", datetime.now())
     print(finalres.shape)
-    np.savez('testMultiprocess',s_tot=finalres, s_diag=finalresdiag, qlist=qlist, omegalist=omegalist)
+    np.savez('nSite2DPlottingData',s_tot=finalres, s_diag=finalresdiag, qlist=qlist, omegalist=omegalist)
 
 
