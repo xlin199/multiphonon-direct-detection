@@ -76,8 +76,8 @@ NSiteLattice2D.ipynb --
        * 2D plot $S(\omega, q)$
        * Rate calculation (compare with single HO) -->
 
-#### TODO
+<!-- #### TODO
 1. Rate calculation 
-   - Sanity check: reproduce 2205.02250 Fig 15(a), silicon with 1 meV energy threshold (intermediate step: Fig 13 (c) $dR/d \omega$)
+   - Sanity check: reproduce 2205.02250 Fig 15(a), silicon with 1 meV energy threshold (intermediate step: Fig 13 (c) $dR/d \omega$) -->
 
 
