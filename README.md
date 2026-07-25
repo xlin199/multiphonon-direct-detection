@@ -4,21 +4,41 @@ StructureFactor1D.py --
   1. Script calculating $S(\omega, q)$ as a function of $\omega$ for different $q$.
   2. Finished the incoherent approximation (see NSiteLatticeFixqRecursive.ipynb)
 
-NSiteLatticeFixqRecursive.ipynb --
-  1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$, using the recursive relation and incoherent approximation.
-
-NSiteLatticeFixqRecursiveCoherent.ipynb --
-  1. $S(\omega, q)$ as a function of $\omega$ for different $q$, including the off-diagonal factors
-  2. Sanity check passed: 1 phonon resonance matches the dispersion relation
-
 NSiteLatticeCoherentMultiprocess.py --
-  1. Batch calculation of $S(\omega, q)$ for a list of $q$, same code as in NSiteLatticeFixqRecursiveCoherent.ipynb
-   
-  ---
+  1. Batch calculation of $S(\omega, q)$ for a list of $q$
 
+TwoSite+NSiteLattice_Diagram.ipynb --
+  1. Schematic diagrams and density of states plots for 2-site and N-site lattice models
+
+TwoSiteLattice_fixq.ipynb --
+  1. 2-site structure factor as a function of $\omega$ at fixed $q$ values 
+
+NSiteLatticeStructureFactor.ipynb --
+  1. N-site structure factor as a function of $\omega$ at fixed $q$ values 
+
+NSiteLatticeFixq_2phonons.ipynb --
+  1. N-site structure factor on $\omega_1$ vs $\omega_2$ plane, showing the dispersion relation of 2 phonons
+
+NSiteLattice_2d.ipynb --
+  1. N-site structure factor on ($q$, $\omega$) plane
+
+ScatteringRate_dRdomega(dRdq, R_vs_mass)_massive(massless)Mediator.ipynb --
+  1. (Partial) scattering rate and cross section for massive (massless) mediator, N-site lattice
+	
+ScatteringRate_dRdq_massiveMediator_3orders.ipynb --
+  1. Compare dR/dq for a massive mediator computed with the first-, second-, and third-order structure factor separately (one panel each).
+
+TwoSiteLattice_integratedS_3orders.ipynb --
+  1. Compare structure factor integrated over $\omega$ fcomputed with the first-, second-, and third-order separately 
+
+
+
+  
+  ---
+<!-- 
 /archive/NSiteLatticeFixq.ipynb --
   1. Here focusing on plotting $S(\omega, q)$ as a function of $\omega$ for different $q$
-  2. --> ~~Why doesn't it match with the impulse approximation?~~ used wrong DW factor. Fixed in newer notebooks. 
+  2. ~~Why doesn't it match with the impulse approximation?~~ used wrong DW factor. Fixed in newer notebooks. 
   3. Moved to the /archive folder
 
 NSiteLatticeFixq_2phonons.ipynb
@@ -30,14 +50,14 @@ NSiteLattice1D.ipynb --
   1. Here focusing on plotting $\int S(\omega, q) d\omega$
   2. Directly calculating the structure factor without any smearing of the phonon 
   distribution, and without using the recursion relation.
-  3. --> Plots comparing the incoherent approx with the full coherent result - still useful! 
-  4. --> Can do one version with energy cut and one without energy cut (N-dependent DW)
+  3. Plots comparing the incoherent approx with the full coherent result - still useful! 
+  4. Can do one version with energy cut and one without energy cut (N-dependent DW)
   
 NSiteLattice2D.ipynb -- 
   1. Here focusing on plotting $S(\omega, q)$
-  2. --> Still useful to have 2D plots of $S(\omega, q)$! [But first focus on the 1D plots]
+  2. Still useful to have 2D plots of $S(\omega, q)$! [But first focus on the 1D plots]
   3. Currently old independent code from Momei -- would either need to perform checks against
-  4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure
+  4. the code in NSiteLattice1D.ipynb, or can rewrite it given the latest results in calculating structure -->
 
 ---
 
