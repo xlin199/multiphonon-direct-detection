@@ -1,34 +1,34 @@
 ## Files
 
-StructureFactor1D.py --
+**StructureFactor1D.py** --
   1. Script calculating $S(\omega, q)$ as a function of $\omega$ for different $q$.
   2. Finished the incoherent approximation (see NSiteLatticeFixqRecursive.ipynb)
 
-NSiteLatticeCoherentMultiprocess.py --
+**NSiteLatticeCoherentMultiprocess.py** --
   1. Batch calculation of $S(\omega, q)$ for a list of $q$
 
-TwoSite+NSiteLattice_Diagram.ipynb --
+**TwoSite+NSiteLattice_Diagram.ipynb** --
   1. Schematic diagrams and density of states plots for 2-site and N-site lattice models
 
-TwoSiteLattice_fixq.ipynb --
+**TwoSiteLattice_fixq.ipynb** --
   1. 2-site structure factor as a function of $\omega$ at fixed $q$ values 
 
-NSiteLatticeStructureFactor.ipynb --
+**NSiteLatticeStructureFactor.ipynb** --
   1. N-site structure factor as a function of $\omega$ at fixed $q$ values 
 
-NSiteLatticeFixq_2phonons.ipynb --
+**NSiteLatticeFixq_2phonons.ipynb** --
   1. N-site structure factor on $\omega_1$ vs $\omega_2$ plane, showing the dispersion relation of 2 phonons
 
-NSiteLattice_2d.ipynb --
+**NSiteLattice_2d.ipynb** --
   1. N-site structure factor on ($q$, $\omega$) plane
 
-ScatteringRate_dRdomega(dRdq, R_vs_mass)_massive(massless)Mediator.ipynb --
+**ScatteringRate_dRdomega(dRdq, R_vs_mass)_massive(massless)Mediator.ipynb** --
   1. (Partial) scattering rate and cross section for massive (massless) mediator, N-site lattice
 	
-ScatteringRate_dRdq_massiveMediator_3orders.ipynb --
+**ScatteringRate_dRdq_massiveMediator_3orders.ipynb** --
   1. Compare dR/dq for a massive mediator computed with the first-, second-, and third-order structure factor separately (one panel each).
 
-TwoSiteLattice_integratedS_3orders.ipynb --
+**TwoSiteLattice_integratedS_3orders.ipynb** --
   1. Compare structure factor integrated over $\omega$ fcomputed with the first-, second-, and third-order separately 
 
 
